@@ -5,18 +5,29 @@ package com.Adepu.Order.Service;
 //import com.Adepu.ecom.models.Order;
 
 import com.Adepu.Order.Exceptions.OrderNotFoundException;
+import com.Adepu.Order.Feign.ProductFeignClient;
+import com.Adepu.Order.Feign.UserFeignClient;
 import com.Adepu.Order.Repository.OrderRepository;
 import com.Adepu.Order.model.Order;
 import com.Adepu.Order.model.OrderStatus;
 import com.Adepu.Order.model.Product;
 import com.Adepu.Order.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+
+	@Autowired
+	private UserFeignClient userFeignClient;
+	@Autowired
+	private ProductFeignClient productFeignClient;
+
+
 	OrderRepository orderRepository;
 	
 	public OrderService(OrderRepository orderRepository) {
@@ -47,16 +58,26 @@ public class OrderService {
 		return allorders;
 	}
 	
-	public Long CreateOrder(User user, List<Product> products) {
+	public Long CreateOrder(Long userId, List<Long> productIds) {
+		User user = userFeignClient.getSingleUser(userId);
+
+		List<Product> products = productIds.stream()
+				.map(productFeignClient::getProduct)
+				.collect(Collectors.toList());
+
+		Double totalamount = products.stream()
+				.mapToDouble(Product::getPrice)
+				.sum();
+
 		Order order = new Order();
 
-		Double totalamount = 0.0;
-		for(Product p : products) {
-			totalamount += p.getPrice();
-
-		}
-		order.setUser(user);
-		order.setProducts(products);
+//		Double totalamount = 0.0;
+//		for(Product p : products) {
+//			totalamount += p.getPrice();
+//
+//		}
+		order.setUserId(user.getId());
+		order.setProducts(productIds);
 		order.setPrice(totalamount);
 		order.setOrderstatus(OrderStatus.CREATED);
 

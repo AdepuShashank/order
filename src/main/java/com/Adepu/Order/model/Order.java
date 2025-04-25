@@ -1,26 +1,24 @@
 package com.Adepu.Order.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
 @Table(name="\"Order\"")
 public class Order extends BaseModel {
-	@ManyToOne
-	private User user;
-	
+	private Long userId;
+
+
 	private Double price;
 	private OrderStatus orderstatus;
 
-	@ManyToMany
-	private List<Product> products;
+	@ElementCollection
+	private List<Long> products;
 
-	public Order(User user, Double price,OrderStatus orderstatus, List<Product> products) {
-		this.user = user;
+
+	public Order(Long userId, Double price,OrderStatus orderstatus, List<Product> productIds) {
+		this.userId = userId;
 		this.price = price;
 		this.orderstatus = orderstatus;
 		this.products = products;
@@ -31,11 +29,11 @@ public class Order extends BaseModel {
 	}
 
 
-	public User getUser() {
-		return user;
+	public Long getUserId() {
+		return userId;
 	}
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Double getPrice() {
@@ -54,11 +52,11 @@ public class Order extends BaseModel {
 		this.orderstatus = orderstatus;
 	}
 
-	public List<Product> getProducts() {
+	public List<Long> getProducts() {
 		return products;
 	}
 
-	public void setProducts(List<Product> products) {
+	public void setProducts(List<Long> products) {
 		this.products = products;
 	}
 

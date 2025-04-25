@@ -1,8 +1,10 @@
 package com.Adepu.Order.Controller;
 
 
+import com.Adepu.Order.DTO.OrderDTO;
 import com.Adepu.Order.Service.OrderService;
 import com.Adepu.Order.model.Order;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,8 @@ public class OrderController {
 		return allorders;
 	}
 	@PostMapping("/order")
-	public Long CreateOrder(@RequestBody Order order) {
-		return OrderService.CreateOrder(order.getUser(),order.getProducts());
+	public ResponseEntity<Long> createOrder(@RequestBody OrderDTO request) {
+		Long orderId = OrderService.CreateOrder(request.getUserId(), request.getProductIds());
+		return ResponseEntity.ok(orderId);
 	}
 }
